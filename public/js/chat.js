@@ -1,10 +1,14 @@
 const socket = io()
 
-socket.on('printCount', (count) => {
-    console.log(`The count is ${count}`)
+socket.on('printMessage', (message) => {
+    console.log(message)
 })
 
-document.querySelector('#increment').addEventListener('click', () => {
-    socket.emit('increment')
+
+
+document.querySelector('#message').addEventListener('submit', (e) => {
+    e.preventDefault()
+    const message = e.target.elements.message.value
+    socket.emit('sendMessageToAllClients', message)
 
 })

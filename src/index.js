@@ -14,20 +14,23 @@ const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
 
-let count = 0
+
 
 // when the client connect, this achieved by calling js function in html page
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
+        // send message to all clients except that one
+    socket.broadcast.emit('printMessage', 'one user has joined')
 
-    // Trigger event for the connected client
-    socket.emit('printCount', count)
 
-    // Handle client triggered event with the name (increment)
-    socket.on('increment', () => {
-        count++
-        // Trigger event for all clients
-        io.emit('printCount', count)
+    socket.on('sendMessageToAllClients', (message) => {
+
+        io.emit('printMessage', message)
+    })
+
+
+    socket.on('disconnect', (message) => {
+        io.emit('printMessage', 'one user disconnected')
     })
 
 })
