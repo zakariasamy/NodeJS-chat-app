@@ -2,7 +2,7 @@ const path = require('path')
 const http = require('http')
 const express = require('express')
 const { Server } = require("socket.io");
-
+const { generateMessageWithDate } = require('./utils/messages')
 const app = express()
 
 // we uses http to pass what it return to socket.io because express dosen't return that
@@ -20,21 +20,21 @@ app.use(express.static(publicDirectoryPath))
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
         // send message to all clients except that one
-    socket.broadcast.emit('printMessage', 'one user has joined')
+    socket.broadcast.emit('printMessage', generateMessageWithDate('one user has joined'))
 
 
     socket.on('sendMessageToAllClients', (message) => {
 
-        io.emit('printMessage', message)
+        io.emit('printMessage', generateMessageWithDate(message))
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('printLocationMessage', `https://google.com/maps?q=${coords.latitude},${coords.longitude}`)
+        io.emit('printLocationMessage', generateMessageWithDate(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
     socket.on('disconnect', (message) => {
-        io.emit('printMessage', 'one user disconnected')
+        io.emit('printMessage', generateMessageWithDate('one user disconnected'))
     })
 
 })
