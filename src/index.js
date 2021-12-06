@@ -19,22 +19,29 @@ app.use(express.static(publicDirectoryPath))
 // when the client connect, this achieved by calling js function in html page
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
-        // send message to all clients except that one
-    socket.broadcast.emit('printMessage', generateMessageWithDate('one user has joined'))
 
+    socket.on('join', ({ username, room }) => {
+        // Join specific Room
+        socket.join(room)
 
+        socket.emit('printMessage', generateMessageWithDate('Welcome!'))
+        socket.broadcast.to(room).emit('printMessage', generateMessageWithDate(`${username} has joined!`))
+
+        // socket.emit, io.emit, socket.broadcast.emit
+        // io.to.emit, socket.broadcast.to.emit
+    })
     socket.on('sendMessageToAllClients', (message) => {
 
-        io.emit('printMessage', generateMessageWithDate(message))
+        io.to('cairo').emit('printMessage', generateMessageWithDate(message))
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('printLocationMessage', generateMessageWithDate(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        io.to('cairo').emit('printLocationMessage', generateMessageWithDate(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
     socket.on('disconnect', (message) => {
-        io.emit('printMessage', generateMessageWithDate('one user disconnected'))
+        io.to('cairo').emit('printMessage', generateMessageWithDate('one user disconnected'))
     })
 
 })
