@@ -1,3 +1,4 @@
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
 const path = require('path')
 const http = require('http')
 const express = require('express')
@@ -15,33 +16,43 @@ const publicDirectoryPath = path.join(__dirname, '../public')
 app.use(express.static(publicDirectoryPath))
 
 
-
 // when the client connect, this achieved by calling js function in html page
 io.on('connection', (socket) => {
     console.log('New WebSocket connection')
 
-    socket.on('join', ({ username, room }) => {
+    socket.on('join', ({ username, room }, callback) => {
+        const { error, user } = addUser({ id: socket.id, username, room })
+
+        if (error)
+            return callback(error)
+
         // Join specific Room
-        socket.join(room)
+        socket.join(user.room)
 
-        socket.emit('printMessage', generateMessageWithDate('Welcome!'))
-        socket.broadcast.to(room).emit('printMessage', generateMessageWithDate(`${username} has joined!`))
+        socket.emit('printMessage', generateMessageWithDate('Admin', 'Welcome!'))
+        socket.broadcast.to(user.room).emit('printMessage', generateMessageWithDate(`${user.username} has joined!`))
 
-        // socket.emit, io.emit, socket.broadcast.emit
-        // io.to.emit, socket.broadcast.to.emit
+        callback()
+            // socket.emit, io.emit, socket.broadcast.emit
+            // io.to.emit, socket.broadcast.to.emit
     })
     socket.on('sendMessageToAllClients', (message) => {
 
-        io.to('cairo').emit('printMessage', generateMessageWithDate(message))
+        const user = getUser(socket.id)
+        io.to(user.room).emit('printMessage', generateMessageWithDate(user.username, message))
     })
 
     socket.on('sendLocation', (coords, callback) => {
-        io.to('cairo').emit('printLocationMessage', generateMessageWithDate(`https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
+        const user = getUser(socket.id)
+        io.to(user.room).emit('printLocationMessage', generateMessageWithDate(user.username, `https://google.com/maps?q=${coords.latitude},${coords.longitude}`))
         callback()
     })
 
     socket.on('disconnect', (message) => {
-        io.to('cairo').emit('printMessage', generateMessageWithDate('one user disconnected'))
+        const removedUser = removeUser(socket.id)
+            // the user may not be in the array if it like joined without write username
+        if (removedUser)
+            io.to(removedUser.room).emit('printMessage', generateMessageWithDate(`${removedUser.username} has left`))
     })
 
 })
