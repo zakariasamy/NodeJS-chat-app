@@ -9,6 +9,36 @@ const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
     // Rooms
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
+const autoScroll = () => {
+    /*
+        Summary:
+        * i can just write the last line but i want if i manually scrolled up
+        * i should not auto scrolled down
+    */
+
+
+    // New message element
+    const $newMessage = $messages.lastElementChild
+
+    // Height of the new message
+    const newMessageStyles = getComputedStyle($newMessage)
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom)
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
+
+    // Visible height
+    const visibleHeight = $messages.offsetHeight
+
+    // Height of messages container
+    const containerHeight = $messages.scrollHeight
+
+    // How far have I scrolled?
+    const scrollOffset = $messages.scrollTop + visibleHeight
+
+    if (scrollOffset >= containerHeight - newMessageHeight) {
+        $messages.scrollTop = $messages.scrollHeight
+    }
+}
+
 // trigger event to Join specific room
 socket.emit('join', { username, room }, (error) => {
     if (error) {
@@ -25,6 +55,8 @@ socket.on('printMessage', (message) => {
         username: message.username,
     })
     $messages.insertAdjacentHTML('beforeend', html)
+
+    autoScroll()
 })
 
 socket.on('printLocationMessage', (url) => {
@@ -35,6 +67,8 @@ socket.on('printLocationMessage', (url) => {
         username: message.username,
     })
     $messages.insertAdjacentHTML('beforeend', html)
+
+    autoScroll()
 })
 
 
