@@ -6,6 +6,7 @@ const join = document.querySelector('#active_join')
 socket.emit('sendActiveRooms', (rooms) => {
 
     console.log(rooms)
+    document.querySelector('.active-rooms h2').innerHTML = 'Active Rooms' + ' (' + rooms.length + ')'
     let html = ''
     rooms.forEach((room) => {
         html += Mustache.render(active_form_template, {
