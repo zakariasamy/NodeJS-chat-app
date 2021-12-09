@@ -42,7 +42,8 @@ button {
     border: none;
     color: #fff;
     font-size: 16px;
-    transition: background .3s ease
+    transition: background .3s ease;
+    margin-top: 11px;
 }
 
 button:hover {
