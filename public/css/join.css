@@ -1,0 +1,67 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    padding: 20px;
+    background: #333744;
+}
+
+.active-rooms {
+    float: left;
+    width: 30%;
+}
+
+.join-form {
+    float: left;
+    margin: 0 0 0 42px;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    border: 2px solid #ccc;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    -webkit-overflow-scrolling: touch;
+    max-height: 500px;
+    overflow: scroll;
+}
+
+li {
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+li {
+    background: #f8f8f8;
+}
+
+h2 {
+    color: white;
+    font-size: 34px;
+    font-family: cursive;
+    margin-bottom: 11px;
+}
+
+.active {
+    font-size: 35px;
+    color: green;
+    line-height: 24px;
+}
+
+.text {
+    font-size: 24px;
+    font-family: fantasy;
+    margin: 0 2px;
+}
+
+.active-rooms button {
+    float: right;
+    line-height: 13px;
+    background: #357471;
+}

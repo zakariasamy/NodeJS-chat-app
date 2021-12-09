@@ -5,8 +5,8 @@ const $messages = document.querySelector('#messages')
     // Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
-
-// Rooms
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
+    // Rooms
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
 // trigger event to Join specific room
@@ -67,4 +67,15 @@ $sendLocationButton.addEventListener('click', () => {
 
         })
     })
+})
+
+
+socket.on('roomData', ({ room, users }) => {
+
+    const html = Mustache.render(sidebarTemplate, {
+        room,
+        users
+    })
+
+    document.querySelector('#sidebar').innerHTML = html
 })

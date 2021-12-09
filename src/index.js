@@ -1,4 +1,5 @@
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users')
+const { getActiveRoomsWithUserCount } = require('./utils/socket')
 const path = require('path')
 const http = require('http')
 const express = require('express')
@@ -32,6 +33,12 @@ io.on('connection', (socket) => {
         socket.emit('printMessage', generateMessageWithDate('Admin', 'Welcome!'))
         socket.broadcast.to(user.room).emit('printMessage', generateMessageWithDate(`${user.username} has joined!`))
 
+        // Send ROOM Data to show Rooms and users in FrontEnd on join and disconnect
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        })
+
         callback()
             // socket.emit, io.emit, socket.broadcast.emit
             // io.to.emit, socket.broadcast.to.emit
@@ -51,10 +58,21 @@ io.on('connection', (socket) => {
     socket.on('disconnect', (message) => {
         const removedUser = removeUser(socket.id)
             // the user may not be in the array if it like joined without write username
-        if (removedUser)
+        if (removedUser) {
             io.to(removedUser.room).emit('printMessage', generateMessageWithDate(`${removedUser.username} has left`))
+
+            // Send ROOM Data to show Rooms and users in FrontEnd on join and disconnect
+            io.to(removedUser.room).emit('roomData', {
+                room: removedUser.room,
+                users: getUsersInRoom(removedUser.room)
+            })
+        }
     })
 
+    socket.on('sendActiveRooms', (callback) => {
+        let rooms = getActiveRoomsWithUserCount(io)
+        callback(rooms)
+    })
 })
 
 server.listen(port, () => {

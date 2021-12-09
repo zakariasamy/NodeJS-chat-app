@@ -5,21 +5,38 @@
     <title>Chat App</title>
     <link rel="icon" href="/img/favicon.png">
     <link rel="stylesheet" href="/css/styles.min.css">
+    <link rel="stylesheet" href="/css/join.css">
 </head>
 
 <body>
-    <div class="centered-form">
-        <div class="centered-form__box">
-            <h1>Join</h1>
-            <form action="/chat.html">
-                <label>Display name</label>
-                <input type="text" name="username" placeholder="Display name" required>
-                <label>Room</label>
-                <input type="text" name="room" placeholder="Room" required>
-                <button>Join</button>
-            </form>
+    <div>
+
+        <div class="active-rooms">
+            <h2>Active Rooms</h2>
+            <ul id="ul-active-rooms">
+            </ul>
+        </div>
+
+        <div class="join-form">
+            <h2>Create Room</h2>
+            <div class="centered-form__box">
+                <h1>Join</h1>
+                <form action="/chat.html">
+                    <label>Display name</label>
+                    <input type="text" name="username" placeholder="Display name" required>
+                    <label>Room</label>
+                    <input type="text" name="room" placeholder="Room" required>
+                    <button>Create</button>
+                </form>
+            </div>
         </div>
     </div>
+    <script id="active_rooms_template" type="text/html">
+        <li room={{roomName}}><span class="active">•</span><span class="text">{{roomName}}</span>({{users}} Users)<button onclick="addValueToRoomName(this.parentNode)">Join</button></li>
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/join.js"></script>
 </body>
 
 </html>

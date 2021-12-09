@@ -47,9 +47,15 @@ const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room)
 }
 
+const getNumberOfUsersInRoom = (room) => {
+    room = room.trim().toLowerCase()
+    return users.filter((user) => user.room === room).length
+}
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    getNumberOfUsersInRoom
 }
